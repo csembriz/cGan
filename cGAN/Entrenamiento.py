@@ -183,7 +183,7 @@ def train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=100, n_batc
 print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
 
 # tamaño del espacio latente
-latent_dim = 250
+latent_dim = 500
 # crear el discriminador
 d_model = define_discriminator()
 # crear el generador
