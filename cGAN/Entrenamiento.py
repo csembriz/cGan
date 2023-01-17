@@ -20,12 +20,14 @@ from tensorflow.keras.layers import Embedding
 from tensorflow.keras.layers import Concatenate
 import time
 
+incrusta = 100
+
 # Definición independiente del modelo discriminador
 def define_discriminator(in_shape=(28,28,1), n_classes=10):
 	# entrada de etiqueta
 	in_label = Input(shape=(1,))
 	# incrustación para entrada categórica
-	li = Embedding(n_classes, 50)(in_label)
+	li = Embedding(n_classes, incrusta)(in_label)
 	# escalar las dimensiones de la imagen con activación lineal
 	n_nodes = in_shape[0] * in_shape[1]
 	li = Dense(n_nodes)(li)
@@ -59,7 +61,7 @@ def define_generator(latent_dim, n_classes=10):
 	# entrada de etiqueta
 	in_label = Input(shape=(1,))
 	# incrustación para entrada categórica
-	li = Embedding(n_classes, 50)(in_label)
+	li = Embedding(n_classes, incrusta)(in_label)
 	# multiplicación lineal
 	n_nodes = 7 * 7
 	li = Dense(n_nodes)(li)
