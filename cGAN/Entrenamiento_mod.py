@@ -38,7 +38,7 @@ def define_discriminator(in_shape=(28,28,1), n_classes=10):
 	# concatena la etiqueta como un canal
 	merge = Concatenate()([in_image, li])
 	# reducción de resolución (submuestreo)
-	fe = Conv2D(128, (3,3), strides=(2,2), padding='same')(merge)
+	fe = Conv2D(256, (3,3), strides=(2,2), padding='same')(merge)
 	fe = LeakyReLU(alpha=0.2)(fe)
 	# reducción de resolución (submuestreo)
 	fe = Conv2D(256, (3,3), strides=(2,2), padding='same')(fe)
@@ -81,7 +81,7 @@ def define_generator(latent_dim, n_classes=10):
 	gen = Conv2DTranspose(256, (4,4), strides=(2,2), padding='same')(gen)
 	gen = LeakyReLU(alpha=0.2)(gen)
 	# muestreo ascendente a 28x28
-	gen = Conv2DTranspose(128, (4,4), strides=(2,2), padding='same')(gen)
+	gen = Conv2DTranspose(256, (4,4), strides=(2,2), padding='same')(gen)
 	gen = LeakyReLU(alpha=0.2)(gen)
 	# salida
 	out_layer = Conv2D(1, (7,7), activation='tanh', padding='same')(gen)
@@ -181,7 +181,7 @@ def train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=100, n_batc
 			print('>%d, %d/%d, d1=%.3f, d2=%.3f g=%.3f' %
 				(i+1, j+1, bat_per_epo, d_loss1, d_loss2, g_loss))
 	# guardar el modelo del generador
-	g_model.save('cgan_generator_2cp.h5')
+	g_model.save('cgan_generator_2cp_256.h5')
 
 
 print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
