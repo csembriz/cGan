@@ -28,8 +28,9 @@ def save_plot(examples, n):
 	pyplot.show()
 
 espacio_latente = 500
+tam_incrustacion = 400
 # carga el modelo
-model = load_model('./models/cgan_generator_lat_'+str(espacio_latente)+'.h5')
+model = load_model('./models/cgan_generator_lat_'+str(espacio_latente)+'_inc_'+str(tam_incrustacion)+'.h5')
 # genera imágenes
 latent_points, labels = generate_latent_points(espacio_latente, 100)
 # especificar etiquetas
@@ -40,3 +41,4 @@ X  = model.predict([latent_points, labels])
 X = (X + 1) / 2.0
 # Traza los resultados
 save_plot(X, 10)
+

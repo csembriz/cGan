@@ -51,6 +51,7 @@ def define_discriminator(in_shape=(28,28,1), n_classes=10):
 	out_layer = Dense(1, activation='sigmoid')(fe)
 	# definición del modelo
 	model = Model([in_image, in_label], out_layer)
+	model.summary()
 	# compilación de modelo
 	opt = Adam(lr=0.0002, beta_1=0.5)
 	model.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
