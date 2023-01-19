@@ -20,7 +20,7 @@ from tensorflow.keras.layers import Embedding
 from tensorflow.keras.layers import Concatenate
 import time
 
-incrusta = 200
+incrusta = 50
 
 # Definición independiente del modelo discriminador
 def define_discriminator(in_shape=(28,28,1), n_classes=10):
@@ -41,7 +41,7 @@ def define_discriminator(in_shape=(28,28,1), n_classes=10):
 	fe = Conv2D(128, (3,3), strides=(2,2), padding='same')(merge)
 	fe = LeakyReLU(alpha=0.2)(fe)
 	# reducción de resolución (submuestreo)
-	fe = Conv2D(256, (3,3), strides=(2,2), padding='same')(fe)
+	fe = Conv2D(128, (3,3), strides=(2,2), padding='same')(fe)
 	fe = LeakyReLU(alpha=0.2)(fe)
 	# aplanar mapas de características
 	fe = Flatten()(fe)
@@ -71,14 +71,14 @@ def define_generator(latent_dim, n_classes=10):
 	# entrada del generador de imágenes
 	in_lat = Input(shape=(latent_dim,))
 	# base para la imagen de 7x7
-	n_nodes = 256 * 7 * 7
+	n_nodes = 128 * 7 * 7
 	gen = Dense(n_nodes)(in_lat)
 	gen = LeakyReLU(alpha=0.2)(gen)
-	gen = Reshape((7, 7, 256))(gen)
+	gen = Reshape((7, 7, 128))(gen)
 	# fusionar la generación de imágenes y la entrada de etiquetas
 	merge = Concatenate()([gen, li])
 	# muestreo ascendente a 14x14
-	gen = Conv2DTranspose(256, (4,4), strides=(2,2), padding='same')(gen)
+	gen = Conv2DTranspose(128, (4,4), strides=(2,2), padding='same')(gen)
 	gen = LeakyReLU(alpha=0.2)(gen)
 	# muestreo ascendente a 28x28
 	gen = Conv2DTranspose(128, (4,4), strides=(2,2), padding='same')(gen)
@@ -187,7 +187,7 @@ def train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=100, n_batc
 print("Num GPUs Available_lat_500_inc_200: ", len(tf.config.experimental.list_physical_devices('GPU')))
 
 # tamaño del espacio latente
-latent_dim = 500
+latent_dim = 100
 # crear el discriminador
 d_model = define_discriminator()
 # crear el generador
@@ -199,5 +199,5 @@ dataset = load_real_samples()
 
 start_time = time.time()
 # entrenar el modelo
-train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=100)
+train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=1)
 print("--- %s seconds ---" % (time.time() - start_time))
