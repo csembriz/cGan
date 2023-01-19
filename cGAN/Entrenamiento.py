@@ -20,7 +20,7 @@ from tensorflow.keras.layers import Embedding
 from tensorflow.keras.layers import Concatenate
 import time
 
-incrusta = 400
+incrusta = 25
 
 # Definición independiente del modelo discriminador
 def define_discriminator(in_shape=(28,28,1), n_classes=10):
