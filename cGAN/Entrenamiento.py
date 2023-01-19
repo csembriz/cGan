@@ -41,7 +41,10 @@ def define_discriminator(in_shape=(28,28,1), n_classes=10):
 	fe = Conv2D(128, (3,3), strides=(2,2), padding='same')(merge)
 	fe = LeakyReLU(alpha=0.2)(fe)
 	# reducción de resolución (submuestreo)
-	fe = Conv2D(128, (3,3), strides=(2,2), padding='same')(fe)
+	fe = Conv2D(256, (3,3), strides=(2,2), padding='same')(fe)
+	fe = LeakyReLU(alpha=0.2)(fe)
+	# reducción de resolución (submuestreo)
+	fe = Conv2D(512, (3,3), strides=(2,2), padding='same')(fe)
 	fe = LeakyReLU(alpha=0.2)(fe)
 	# aplanar mapas de características
 	fe = Flatten()(fe)
@@ -51,6 +54,7 @@ def define_discriminator(in_shape=(28,28,1), n_classes=10):
 	out_layer = Dense(1, activation='sigmoid')(fe)
 	# definición del modelo
 	model = Model([in_image, in_label], out_layer)
+	model.summary()
 	# compilación de modelo
 	opt = Adam(lr=0.0002, beta_1=0.5)
 	model.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
@@ -63,21 +67,24 @@ def define_generator(latent_dim, n_classes=10):
 	# incrustación para entrada categórica
 	li = Embedding(n_classes, incrusta)(in_label)
 	# multiplicación lineal
-	n_nodes = 7 * 7
+	n_nodes = 4 * 4
 	li = Dense(n_nodes)(li)
 	# remodelar a canal adicional
-	li = Reshape((7, 7, 1))(li)
+	li = Reshape((4, 4, 1))(li)
 	# entrada del generador de imágenes
 	in_lat = Input(shape=(latent_dim,))
 	# base para la imagen de 7x7
-	n_nodes = 128 * 7 * 7
+	n_nodes = 512 * 4 * 4
 	gen = Dense(n_nodes)(in_lat)
 	gen = LeakyReLU(alpha=0.2)(gen)
-	gen = Reshape((7, 7, 128))(gen)
+	gen = Reshape((4, 4, 512))(gen)
 	# fusionar la generación de imágenes y la entrada de etiquetas
 	merge = Concatenate()([gen, li])
+	# muestreo ascendente a 7x7
+	gen = Conv2DTranspose(512, (4,4), strides=(1,1), padding='valid')(merge)
+	gen = LeakyReLU(alpha=0.2)(gen)
 	# muestreo ascendente a 14x14
-	gen = Conv2DTranspose(128, (4,4), strides=(2,2), padding='same')(merge)
+	gen = Conv2DTranspose(256, (4,4), strides=(2,2), padding='same')(gen)
 	gen = LeakyReLU(alpha=0.2)(gen)
 	# muestreo ascendente a 28x28
 	gen = Conv2DTranspose(128, (4,4), strides=(2,2), padding='same')(gen)
@@ -86,6 +93,7 @@ def define_generator(latent_dim, n_classes=10):
 	out_layer = Conv2D(1, (7,7), activation='tanh', padding='same')(gen)
 	# definición del modelo
 	model = Model([in_lat, in_label], out_layer)
+	model.summary()
 	return model
 
 # definir el modelo combinado de generador y discriminador, 
@@ -179,7 +187,7 @@ def train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=100, n_batc
 			print('>%d, %d/%d, d1=%.3f, d2=%.3f g=%.3f' %
 				(i+1, j+1, bat_per_epo, d_loss1, d_loss2, g_loss))
 	# guardar el modelo del generador
-	g_model.save('cgan_generator_lat_500_inc_25.h5')
+	g_model.save('cgan_generator.h5')
 
 
 print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
