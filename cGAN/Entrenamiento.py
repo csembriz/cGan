@@ -43,9 +43,6 @@ def define_discriminator(in_shape=(28,28,1), n_classes=10):
 	# reducción de resolución (submuestreo)
 	fe = Conv2D(256, (3,3), strides=(2,2), padding='same')(fe)
 	fe = LeakyReLU(alpha=0.2)(fe)
-	# reducción de resolución (submuestreo)
-	fe = Conv2D(512, (3,3), strides=(2,2), padding='same')(fe)
-	fe = LeakyReLU(alpha=0.2)(fe)
 	# aplanar mapas de características
 	fe = Flatten()(fe)
 	# dropout
@@ -67,22 +64,19 @@ def define_generator(latent_dim, n_classes=10):
 	# incrustación para entrada categórica
 	li = Embedding(n_classes, incrusta)(in_label)
 	# multiplicación lineal
-	n_nodes = 4 * 4
+	n_nodes = 7 * 7
 	li = Dense(n_nodes)(li)
 	# remodelar a canal adicional
-	li = Reshape((4, 4, 1))(li)
+	li = Reshape((7, 7, 1))(li)
 	# entrada del generador de imágenes
 	in_lat = Input(shape=(latent_dim,))
 	# base para la imagen de 7x7
-	n_nodes = 512 * 4 * 4
+	n_nodes = 256 * 7 * 7
 	gen = Dense(n_nodes)(in_lat)
 	gen = LeakyReLU(alpha=0.2)(gen)
-	gen = Reshape((4, 4, 512))(gen)
+	gen = Reshape((7, 7, 256))(gen)
 	# fusionar la generación de imágenes y la entrada de etiquetas
 	merge = Concatenate()([gen, li])
-	# muestreo ascendente a 7x7
-	gen = Conv2DTranspose(512, (4,4), strides=(1,1), padding='valid')(gen)
-	gen = LeakyReLU(alpha=0.2)(gen)
 	# muestreo ascendente a 14x14
 	gen = Conv2DTranspose(256, (4,4), strides=(2,2), padding='same')(gen)
 	gen = LeakyReLU(alpha=0.2)(gen)
@@ -205,5 +199,5 @@ dataset = load_real_samples()
 
 start_time = time.time()
 # entrenar el modelo
-train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=1)
+train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=100)
 print("--- %s seconds ---" % (time.time() - start_time))

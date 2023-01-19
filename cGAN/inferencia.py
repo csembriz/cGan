@@ -27,8 +27,8 @@ def save_plot(examples, n):
 		pyplot.imshow(examples[i, :, :, 0], cmap='gray_r')
 	pyplot.show()
 
-espacio_latente = 100
-tam_incrustacion = 50
+espacio_latente = 500
+tam_incrustacion = 200
 # carga el modelo
 model = load_model('./cgan_generator.h5')
 # genera imágenes
