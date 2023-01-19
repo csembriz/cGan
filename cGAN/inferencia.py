@@ -27,10 +27,11 @@ def save_plot(examples, n):
 		pyplot.imshow(examples[i, :, :, 0], cmap='gray_r')
 	pyplot.show()
 
+espacio_latente = 500
 # carga el modelo
-model = load_model('cgan_generator_lat_150.h5')
+model = load_model('./models/cgan_generator_lat_'+str(espacio_latente)+'.h5')
 # genera imágenes
-latent_points, labels = generate_latent_points(150, 100)
+latent_points, labels = generate_latent_points(espacio_latente, 100)
 # especificar etiquetas
 labels = asarray([x for _ in range(10) for x in range(10)])
 # genera imágenes
