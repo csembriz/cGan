@@ -41,7 +41,7 @@ def define_discriminator(in_shape=(28,28,1), n_classes=10):
 	fe = Conv2D(128, (3,3), strides=(2,2), padding='same')(merge)
 	fe = LeakyReLU(alpha=0.2)(fe)
 	# reducción de resolución (submuestreo)
-	fe = Conv2D(128, (3,3), strides=(2,2), padding='same')(fe)
+	fe = Conv2D(256, (3,3), strides=(2,2), padding='same')(fe)
 	fe = LeakyReLU(alpha=0.2)(fe)
 	# aplanar mapas de características
 	fe = Flatten()(fe)
@@ -71,14 +71,14 @@ def define_generator(latent_dim, n_classes=10):
 	# entrada del generador de imágenes
 	in_lat = Input(shape=(latent_dim,))
 	# base para la imagen de 7x7
-	n_nodes = 128 * 7 * 7
+	n_nodes = 256 * 7 * 7
 	gen = Dense(n_nodes)(in_lat)
 	gen = LeakyReLU(alpha=0.2)(gen)
-	gen = Reshape((7, 7, 128))(gen)
+	gen = Reshape((7, 7, 256))(gen)
 	# fusionar la generación de imágenes y la entrada de etiquetas
 	merge = Concatenate()([gen, li])
 	# muestreo ascendente a 14x14
-	gen = Conv2DTranspose(128, (4,4), strides=(2,2), padding='same')(gen)
+	gen = Conv2DTranspose(256, (4,4), strides=(2,2), padding='same')(gen)
 	gen = LeakyReLU(alpha=0.2)(gen)
 	# muestreo ascendente a 28x28
 	gen = Conv2DTranspose(128, (4,4), strides=(2,2), padding='same')(gen)
