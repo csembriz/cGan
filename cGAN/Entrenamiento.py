@@ -20,7 +20,7 @@ from tensorflow.keras.layers import Embedding
 from tensorflow.keras.layers import Concatenate
 import time
 
-incrusta = 100
+incrusta = 400
 
 # Definición independiente del modelo discriminador
 def define_discriminator(in_shape=(28,28,1), n_classes=10):
@@ -179,7 +179,7 @@ def train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=100, n_batc
 			print('>%d, %d/%d, d1=%.3f, d2=%.3f g=%.3f' %
 				(i+1, j+1, bat_per_epo, d_loss1, d_loss2, g_loss))
 	# guardar el modelo del generador
-	g_model.save('cgan_generator.h5')
+	g_model.save('cgan_generator_lat_500_inc_400.h5')
 
 
 print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
